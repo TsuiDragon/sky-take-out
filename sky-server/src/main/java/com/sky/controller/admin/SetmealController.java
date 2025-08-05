@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin/setmeal")
 public class SetmealController {
@@ -24,9 +26,17 @@ public class SetmealController {
         return  Result.success();
     }
 
+    //分页查询接口
     @GetMapping("/page")
     public Result<PageResult> page(SetmealPageQueryDTO setmealPageQueryDTO) {
         PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    //批量删除接口
+    @DeleteMapping
+    public Result deleteWithDish(@RequestParam List<Long> ids){
+        setmealService.deleteWithDish(ids);
+        return Result.success();
     }
 }
