@@ -15,4 +15,6 @@ public interface SetmealService {
     void deleteWithDish(List<Long> ids);
 
     SetmealVO getById(Long id);
+
+    void update(SetmealDTO setmealDTO);
 }
