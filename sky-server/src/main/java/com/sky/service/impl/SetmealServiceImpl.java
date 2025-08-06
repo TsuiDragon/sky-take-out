@@ -15,6 +15,7 @@ import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import com.sky.service.SetmealService;
+import com.sky.vo.DishItemVO;
 import com.sky.vo.SetmealVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -45,7 +46,7 @@ public class SetmealServiceImpl implements SetmealService {
         Long setmealId = setmeal.getId();
 
         List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
-        log.info("setmealId为{}",setmealId);
+        log.info("setmealId为{}", setmealId);
         for (SetmealDish setmealDish : setmealDishes) {
             setmealDish.setSetmealId(setmealId);
         }
@@ -55,11 +56,11 @@ public class SetmealServiceImpl implements SetmealService {
     //套餐分页查询
     @Override
     public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
-        PageHelper.startPage(setmealPageQueryDTO.getPage(),setmealPageQueryDTO.getPageSize());
+        PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
         Page<SetmealVO> page = setmealMapper.pageQuery(setmealPageQueryDTO);
-        Long total = (long)page.getTotal();
+        Long total = (long) page.getTotal();
         List<SetmealVO> setmeals = page.getResult();
-        return new PageResult(total,setmeals);
+        return new PageResult(total, setmeals);
     }
 
     //批量删除套餐
@@ -68,7 +69,7 @@ public class SetmealServiceImpl implements SetmealService {
         //判断套餐售卖状态
         for (Long id : ids) {
             Setmeal setmeal = setmealMapper.getById(id);
-            if (setmeal.getStatus() == StatusConstant.ENABLE){
+            if (setmeal.getStatus() == StatusConstant.ENABLE) {
                 throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
             }
         }
@@ -97,7 +98,7 @@ public class SetmealServiceImpl implements SetmealService {
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO, setmeal);
         setmealMapper.update(setmeal);
-        List<SetmealDish>  setmealDishes = setmealDTO.getSetmealDishes();
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
         //删除套餐对应所有菜品
         setmealDishMapper.deleteBySetmealId(setmealDTO.getId());
         //添加套餐菜品
@@ -116,5 +117,26 @@ public class SetmealServiceImpl implements SetmealService {
                 .updateUser(BaseContext.getCurrentId())
                 .build();
         setmealMapper.update(setmeal);
+    }
+
+    /**
+     * 条件查询
+     *
+     * @param setmeal
+     * @return
+     */
+    public List<Setmeal> list(Setmeal setmeal) {
+        List<Setmeal> list = setmealMapper.list(setmeal);
+        return list;
+    }
+
+    /**
+     * 根据id查询菜品选项
+     *
+     * @param id
+     * @return
+     */
+    public List<DishItemVO> getDishItemById(Long id) {
+        return setmealMapper.getDishItemBySetmealId(id);
     }
 }
